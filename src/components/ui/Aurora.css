@@ -1,0 +1,63 @@
+.aurora-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.aurora-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Atmospheric 3D Depth Shadow for Aurora Curtains */
+.aurora-has-shadow .aurora-canvas {
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.14))
+          drop-shadow(0 35px 55px rgba(3, 97, 55, 0.28))
+          drop-shadow(0 12px 24px rgba(0, 250, 135, 0.22));
+}
+
+.dark .aurora-has-shadow .aurora-canvas,
+[data-theme='dark'] .aurora-has-shadow .aurora-canvas {
+  filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.45))
+          drop-shadow(0 40px 75px rgba(0, 250, 135, 0.32))
+          drop-shadow(0 12px 25px rgba(5, 220, 193, 0.26));
+}
+
+/* Biomechanical Diagnostic Scanner Animation */
+@keyframes scan-beam {
+  0%, 100% {
+    top: 5%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.75;
+  }
+  50% {
+    top: 85%;
+    opacity: 0.75;
+  }
+  85% {
+    opacity: 0.75;
+  }
+}
+
+.animate-scan-beam {
+  animation: scan-beam 4s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 24s linear infinite;
+}
