@@ -17,15 +17,15 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     if (isLoginPage) {
-      setIsAuthenticated(true);
       return;
     }
 
     let active = true;
+    setIsAuthenticated(null);
     const verifySession = async () => {
       const user = await getAuthMe();
       if (!active) return;
-      if (!user || (user.role !== "admin" && user.role !== "receptionist")) {
+      if (!user || (user.role !== "admin" && user.role !== "doctor" && user.role !== "receptionist")) {
         router.push("/admin/login");
         return;
       }

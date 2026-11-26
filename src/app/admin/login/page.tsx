@@ -23,11 +23,17 @@ export default function LoginPage() {
       }
     }
 
+    // If no prior local session hint exists, show login immediately
+    const hasSessionHint = typeof window !== "undefined" && Boolean(localStorage.getItem("admin_role"));
+    if (!hasSessionHint) {
+      setLoading(false);
+    }
+
     // Check active HttpOnly cookie session
     let active = true;
     getAuthMe().then((user) => {
       if (!active) return;
-      if (user && (user.role === "admin" || user.role === "receptionist")) {
+      if (user && (user.role === "admin" || user.role === "doctor" || user.role === "receptionist")) {
         if (user.role === "receptionist") {
           router.push("/admin/appointments");
         } else {
