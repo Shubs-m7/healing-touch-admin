@@ -404,6 +404,68 @@ export default function ContentMasterPage() {
                   className="h-9 text-xs"
                 />
               </div>
+
+              <div className="space-y-2 md:col-span-2 pt-2 border-t border-border/50">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-foreground">
+                    Hero Specialty Pills (&quot;Specialized In:&quot;)
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-[11px] gap-1"
+                    onClick={() => {
+                      const current = content.landingPage.hero.specialties || [
+                        "Spine & Lower Back",
+                        "Neck & Cervical",
+                        "Knee & Joints",
+                        "Sports Injury Rehab",
+                        "Post-Op Recovery",
+                      ];
+                      updateLanding("hero", "specialties", [...current, "New Specialty"]);
+                    }}
+                  >
+                    <Plus className="w-3 h-3" /> Add Tag
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {(
+                    content.landingPage.hero.specialties || [
+                      "Spine & Lower Back",
+                      "Neck & Cervical",
+                      "Knee & Joints",
+                      "Sports Injury Rehab",
+                      "Post-Op Recovery",
+                    ]
+                  ).map((tag, idx, arr) => (
+                    <div key={idx} className="flex items-center gap-1.5">
+                      <Input
+                        value={tag}
+                        onChange={(e) => {
+                          const next = [...arr];
+                          next[idx] = e.target.value;
+                          updateLanding("hero", "specialties", next);
+                        }}
+                        className="h-8 text-xs"
+                        placeholder="Specialty name"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive shrink-0"
+                        onClick={() => {
+                          const next = arr.filter((_, i) => i !== idx);
+                          updateLanding("hero", "specialties", next);
+                        }}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 

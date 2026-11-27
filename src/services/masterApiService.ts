@@ -28,6 +28,7 @@ export interface LandingPageContent {
     primaryCtaText: string;
     secondaryCtaText: string;
     variant?: "aurora-v2" | "classic";
+    specialties?: string[];
   };
   trustBadges: TrustBadgeItem[];
   services: CareServiceItem[];
@@ -135,6 +136,13 @@ export const defaultSiteContent: SiteContentData = {
       primaryCtaText: "Book Appointment",
       secondaryCtaText: "Know More About Us",
       variant: "aurora-v2",
+      specialties: [
+        "Spine & Lower Back",
+        "Neck & Cervical",
+        "Knee & Joints",
+        "Sports Injury Rehab",
+        "Post-Op Recovery",
+      ],
     },
     trustBadges: [
       { icon: "Shield", label: "Licensed Experts" },
@@ -490,6 +498,7 @@ export interface ThemeStyling {
   buttonStyle: "pill" | "curved" | "sharp";
   shadowIntensity: "soft" | "medium" | "glow" | "minimal";
   heroGradient: "aurora" | "subtle" | "vibrant" | "minimal";
+  auroraColors?: string[];
 }
 
 export interface ThemeBranding {
@@ -543,6 +552,7 @@ export const defaultThemeMaster: ThemeMasterData = {
     buttonStyle: "curved",
     shadowIntensity: "soft",
     heroGradient: "aurora",
+    auroraColors: ["#036137", "#05dcc1", "#00fa87", "#126e45"],
   },
   branding: {
     clinicDisplayName: "Adaptus Physiotherapy & Health Care",

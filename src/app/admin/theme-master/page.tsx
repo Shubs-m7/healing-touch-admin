@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useThemeMaster } from "@/context/ThemeMasterContext";
+import Aurora from "@/components/ui/Aurora";
 import {
   ThemeMasterData,
   defaultThemeMaster,
@@ -176,7 +177,7 @@ export default function ThemeMasterPage() {
   const { theme, loading, saveTheme, resetToDefault, previewTheme, revertPreview } = useThemeMaster();
 
   const [formData, setFormData] = useState<ThemeMasterData>(defaultThemeMaster);
-  const [activeTab, setActiveTab] = useState<"colors" | "typography" | "styling" | "branding">("colors");
+  const [activeTab, setActiveTab] = useState<"colors" | "typography" | "styling" | "aurora" | "branding">("colors");
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
 
@@ -418,6 +419,7 @@ export default function ThemeMasterPage() {
           { id: "colors", label: "Color Palette", icon: Palette },
           { id: "typography", label: "Typography & Fonts", icon: Type },
           { id: "styling", label: "Radius & Shapes", icon: Sliders },
+          { id: "aurora", label: "Aurora", icon: Sparkles },
           { id: "branding", label: "Clinic Identity", icon: Building },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -1092,7 +1094,8 @@ export default function ThemeMasterPage() {
                         }`}
                       >
                         <div
-                          className={`w-full h-8 bg-teal-600/20 border border-teal-600/40 flex items-center justify-center mb-2 mx-auto ${opt.preview}`}
+                          className="w-full h-8 bg-teal-600/20 border border-teal-600/40 flex items-center justify-center mb-2 mx-auto"
+                          style={{ borderRadius: opt.value }}
                         >
                           <span className="text-[10px] font-bold text-teal-700 dark:text-teal-300">
                             {opt.value}
@@ -1121,9 +1124,9 @@ export default function ThemeMasterPage() {
 
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { id: "curved", label: "Curved Modern (Default)", radius: "rounded-xl" },
-                    { id: "pill", label: "Full Pill Shape", radius: "rounded-full" },
-                    { id: "sharp", label: "Crisp Sharp", radius: "rounded-md" },
+                    { id: "curved", label: "Curved Modern (Default)", radius: "rounded-xl", cssRadius: "0.75rem" },
+                    { id: "pill", label: "Full Pill Shape", radius: "rounded-full", cssRadius: "9999px" },
+                    { id: "sharp", label: "Crisp Sharp", radius: "rounded-md", cssRadius: "0.25rem" },
                   ].map((btn) => {
                     const isSelected = formData.styling.buttonStyle === btn.id;
                     return (
@@ -1145,7 +1148,8 @@ export default function ThemeMasterPage() {
                         }`}
                       >
                         <div
-                          className={`w-full h-8 bg-teal-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow-2xs ${btn.radius}`}
+                          className="w-full h-8 bg-teal-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow-2xs"
+                          style={{ borderRadius: btn.cssRadius }}
                         >
                           Click Me
                         </div>
@@ -1160,7 +1164,157 @@ export default function ThemeMasterPage() {
             </div>
           )}
 
-          {/* TAB 4: CLINIC BRANDING */}
+          {/* TAB 4: AURORA */}
+          {activeTab === "aurora" && (
+            <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-5">
+              {(() => {
+                const stops =
+                  formData.styling.auroraColors && formData.styling.auroraColors.length >= 3
+                    ? formData.styling.auroraColors.slice(0, 5)
+                    : ["#036137", "#05dcc1", "#00fa87", "#126e45"];
+                return (
+                  <>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-teal-600" />
+                          Hero Aurora Background Colors
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Customize 3 to 5 animated WebGL aurora color stops behind the public hero section.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {stops.length < 5 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-8 text-xs gap-1"
+                            onClick={() => {
+                              const next = [...stops, "#10b981"];
+                              const updated: ThemeMasterData = {
+                                ...formData,
+                                styling: { ...formData.styling, auroraColors: next },
+                              };
+                              setFormData(updated);
+                              previewTheme(updated);
+                            }}
+                          >
+                            <Plus className="w-3.5 h-3.5" /> Add Color
+                          </Button>
+                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs"
+                          onClick={() => {
+                            const updated: ThemeMasterData = {
+                              ...formData,
+                              styling: {
+                                ...formData.styling,
+                                auroraColors: ["#036137", "#05dcc1", "#00fa87", "#126e45"],
+                              },
+                            };
+                            setFormData(updated);
+                            previewTheme(updated);
+                          }}
+                        >
+                          Reset Aurora
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Live WebGL Aurora Preview */}
+                    <div className="relative h-40 w-full rounded-2xl border border-border overflow-hidden bg-gradient-to-b from-[#edf7f2] to-[#eef8f3]">
+                      <Aurora
+                        colorStops={stops}
+                        amplitude={2.45}
+                        blend={0}
+                        height={0.43}
+                        speed={3}
+                        glow={1.75}
+                        scale={3}
+                        brightness={2}
+                        mouseInteraction={false}
+                        className="w-full h-full"
+                      />
+                      <div className="absolute bottom-2.5 left-3 px-2.5 py-1 rounded-full bg-white/85 backdrop-blur-sm border border-border text-[11px] font-semibold text-slate-800">
+                        Live Aurora Preview ({stops.length} stops)
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {stops.map((colorVal, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 rounded-xl border border-border bg-muted/30 space-y-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs font-bold text-muted-foreground">
+                              Stop {idx + 1}
+                            </Label>
+                            {stops.length > 3 && (
+                              <button
+                                type="button"
+                                title="Remove color stop"
+                                onClick={() => {
+                                  const next = stops.filter((_, i) => i !== idx);
+                                  const updated: ThemeMasterData = {
+                                    ...formData,
+                                    styling: { ...formData.styling, auroraColors: next },
+                                  };
+                                  setFormData(updated);
+                                  previewTheme(updated);
+                                }}
+                                className="text-muted-foreground hover:text-destructive transition-colors"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                            <input
+                              type="color"
+                              value={/^#[0-9A-Fa-f]{6}$/.test(colorVal) ? colorVal : "#05dcc1"}
+                              onChange={(e) => {
+                                const next = [...stops];
+                                next[idx] = e.target.value;
+                                const updated: ThemeMasterData = {
+                                  ...formData,
+                                  styling: { ...formData.styling, auroraColors: next },
+                                };
+                                setFormData(updated);
+                                previewTheme(updated);
+                              }}
+                              className="w-9 h-9 rounded-lg border border-border cursor-pointer bg-transparent p-0 shrink-0"
+                            />
+                            <Input
+                              value={colorVal}
+                              onChange={(e) => {
+                                const next = [...stops];
+                                next[idx] = e.target.value;
+                                const updated: ThemeMasterData = {
+                                  ...formData,
+                                  styling: { ...formData.styling, auroraColors: next },
+                                };
+                                setFormData(updated);
+                                previewTheme(updated);
+                              }}
+                              className="h-9 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* TAB 5: CLINIC BRANDING */}
           {activeTab === "branding" && (
             <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-5">
               <div>
