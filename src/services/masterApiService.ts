@@ -371,6 +371,12 @@ const getAdminAuthHeaders = (includeContentType = false): HeadersInit => {
   if (includeContentType) {
     headers["Content-Type"] = "application/json";
   }
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("admin_token");
+    if (token && token !== "cookie") {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
   return headers;
 };
 
@@ -508,6 +514,21 @@ export interface ThemeBranding {
   logoTextHighlight?: string;
 }
 
+export interface CustomThemePreset {
+  id: string;
+  name: string;
+  desc?: string;
+  primary: string;
+  primaryHsl: string;
+  secondary: string;
+  secondaryHsl: string;
+  accent: string;
+  accentHsl: string;
+  background: string;
+  backgroundHsl: string;
+  foregroundHsl?: string;
+}
+
 export interface ThemeMasterData {
   key?: string;
   activePreset: string;
@@ -515,6 +536,7 @@ export interface ThemeMasterData {
   typography: ThemeTypography;
   styling: ThemeStyling;
   branding: ThemeBranding;
+  customPresets?: CustomThemePreset[];
   updatedAt?: string;
 }
 

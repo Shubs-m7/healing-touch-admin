@@ -126,13 +126,16 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
           description: `Welcome back, ${res.name || roleTitle}!`,
         });
         
-        // Save non-sensitive UI display metadata only (JWT is stored in HttpOnly cookie)
+        // Save session authentication and UI display metadata
+        if (res.token) {
+          localStorage.setItem("admin_token", res.token);
+        }
         localStorage.setItem("admin_email", email);
         localStorage.setItem("admin_role", res.role || "admin");
         const finalName = (res.name && res.name !== "Clinic Staff") ? res.name : (res.role === "receptionist" ? "Front Desk" : "Doctor");
         localStorage.setItem("admin_name", finalName);
         
-        onLoginSuccess("cookie");
+        onLoginSuccess(res.token || "cookie");
       }
     } catch (error: any) {
       toast({

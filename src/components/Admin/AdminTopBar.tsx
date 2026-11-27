@@ -58,7 +58,15 @@ export default function AdminTopBar({ onLogout }: AdminTopBarProps) {
 
     updateTime();
     const timer = setInterval(updateTime, 1000);
-    return () => clearInterval(timer);
+    const onProfileUpdated = () => {
+      const updatedName = localStorage.getItem("admin_name");
+      if (updatedName) setStaffName(updatedName);
+    };
+    window.addEventListener("admin-profile-updated", onProfileUpdated);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("admin-profile-updated", onProfileUpdated);
+    };
   }, []);
 
   const getPageTitle = () => {
@@ -67,6 +75,7 @@ export default function AdminTopBar({ onLogout }: AdminTopBarProps) {
     if (pathname.includes("/admin/sessions")) return "Session Check-in & Therapy Log";
     if (pathname.includes("/admin/payments")) return "Financial Ledger & Collections";
     if (pathname.includes("/admin/analytics")) return "Clinic Performance Analytics";
+    if (pathname.includes("/admin/profile")) return "Staff Profile & 2FA Security";
     return "Executive Clinic Dashboard";
   };
 
@@ -101,9 +110,13 @@ export default function AdminTopBar({ onLogout }: AdminTopBarProps) {
           <span>Live Desk Active</span>
         </div>
 
-        {/* Staff Role Badge */}
-        <div className="flex items-center gap-2 pl-2 border-l border-border/70">
-          <div className="w-7 h-7 rounded-full bg-teal-500/15 text-teal-700 dark:text-teal-300 flex items-center justify-center font-bold text-xs">
+        {/* Staff Role Badge (links to Profile) */}
+        <Link
+          href="/admin/profile"
+          className="flex items-center gap-2 pl-2 border-l border-border/70 hover:opacity-80 transition-opacity"
+          title="Open Profile & Password Settings"
+        >
+          <div className="w-7 h-7 rounded-full bg-primary/15 text-primary flex items-center justify-center font-bold text-xs">
             {isReceptionist ? "R" : "Dr"}
           </div>
           <div className="text-left leading-tight hidden sm:block">
@@ -114,7 +127,7 @@ export default function AdminTopBar({ onLogout }: AdminTopBarProps) {
               {isReceptionist ? "Receptionist" : "Doctor"}
             </span>
           </div>
-        </div>
+        </Link>
 
         {/* Logout */}
         {onLogout && (

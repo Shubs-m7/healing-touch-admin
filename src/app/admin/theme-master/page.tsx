@@ -180,6 +180,7 @@ export default function ThemeMasterPage() {
   const [activeTab, setActiveTab] = useState<"colors" | "typography" | "styling" | "aurora" | "branding">("colors");
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [customPresetName, setCustomPresetName] = useState("");
 
   useEffect(() => {
     if (theme) {
@@ -357,7 +358,7 @@ export default function ThemeMasterPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <RefreshCw className="h-8 w-8 text-teal-600 animate-spin" />
+        <RefreshCw className="h-8 w-8 text-primary animate-spin" />
         <p className="text-sm font-semibold text-muted-foreground">Loading Theme Master...</p>
       </div>
     );
@@ -367,10 +368,10 @@ export default function ThemeMasterPage() {
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Top Header */}
       <div className="bg-card border border-border/80 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-teal-500/10 via-sky-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-sky-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
         <div className="space-y-1.5 z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-600 text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
             <Palette className="h-3.5 w-3.5" />
             Global Appearance Master
           </div>
@@ -401,7 +402,7 @@ export default function ThemeMasterPage() {
             size="sm"
             onClick={handleSave}
             disabled={saving || resetting}
-            className="rounded-xl h-10 px-6 text-xs font-bold gap-2 bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="rounded-xl h-10 px-6 text-xs font-bold gap-2 bg-primary hover:bg-primary/90 text-white shadow-md shadow-teal-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             {saving ? (
               <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -431,7 +432,7 @@ export default function ThemeMasterPage() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all shrink-0 cursor-pointer ${
                 isActive
-                  ? "border-teal-600 text-teal-600 bg-teal-500/5 rounded-t-xl"
+                  ? "border-primary text-primary bg-primary/5 rounded-t-xl"
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >
@@ -453,7 +454,7 @@ export default function ThemeMasterPage() {
               <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
                 <div>
                   <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-teal-600" />
+                    <Sparkles className="h-4 w-4 text-primary" />
                     Curated Clinical Palettes
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -462,7 +463,12 @@ export default function ThemeMasterPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {PRESET_PALETTES.map((preset) => {
+                  {[...PRESET_PALETTES, ...(formData.customPresets || []).map((cp) => ({
+                    ...cp,
+                    desc: cp.desc || "Saved custom color preset",
+                    foregroundHsl: cp.foregroundHsl || "222 47% 11%",
+                    isCustom: true,
+                  }))].map((preset: PresetOption & { isCustom?: boolean }) => {
                     const isSelected = formData.activePreset === preset.id;
                     return (
                       <div
@@ -470,17 +476,47 @@ export default function ThemeMasterPage() {
                         onClick={() => handlePresetSelect(preset)}
                         className={`p-3.5 rounded-2xl border transition-all cursor-pointer text-left relative ${
                           isSelected
-                            ? "border-teal-600 bg-teal-50/40 dark:bg-teal-950/20 ring-2 ring-teal-600/20 shadow-xs"
-                            : "border-border hover:border-teal-300 hover:bg-muted/40"
+                            ? "border-primary bg-primary/10 ring-2 ring-primary/20 shadow-xs"
+                            : "border-border hover:border-primary/40 hover:bg-muted/40"
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-bold text-foreground">{preset.name}</span>
-                          {isSelected && (
-                            <span className="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px]">
-                              <Check className="h-3 w-3" />
-                            </span>
-                          )}
+                        <div className="flex items-center justify-between mb-2 gap-2">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="text-xs font-bold text-foreground truncate">{preset.name}</span>
+                            {preset.isCustom && (
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-primary/15 text-primary shrink-0">
+                                Custom
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            {preset.isCustom && (
+                              <button
+                                type="button"
+                                title="Delete custom preset"
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  const nextCustom = (formData.customPresets || []).filter((p) => p.id !== preset.id);
+                                  const updated: ThemeMasterData = {
+                                    ...formData,
+                                    customPresets: nextCustom,
+                                    activePreset: formData.activePreset === preset.id ? "custom" : formData.activePreset,
+                                  };
+                                  setFormData(updated);
+                                  await saveTheme(updated);
+                                  toast.success(`Removed custom preset "${preset.name}"`);
+                                }}
+                                className="w-5 h-5 rounded-full hover:bg-destructive/15 text-muted-foreground hover:text-destructive flex items-center justify-center"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            )}
+                            {isSelected && (
+                              <span className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center text-[10px]">
+                                <Check className="h-3 w-3" />
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <p className="text-[11px] text-muted-foreground line-clamp-1 mb-2.5">
                           {preset.desc}
@@ -518,7 +554,7 @@ export default function ThemeMasterPage() {
               <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-5">
                 <div>
                   <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Palette className="h-4 w-4 text-teal-600" />
+                    <Palette className="h-4 w-4 text-primary" />
                     Custom Color Fine-Tuning
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -623,6 +659,54 @@ export default function ThemeMasterPage() {
                     </span>
                   </div>
                 </div>
+
+                {/* Save Current Colors as Custom Preset */}
+                <div className="pt-4 mt-2 border-t border-border/70 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                  <Input
+                    value={customPresetName}
+                    onChange={(e) => setCustomPresetName(e.target.value)}
+                    placeholder="Custom preset name (e.g. Clinic Mint Pro)"
+                    className="h-9 text-xs flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={!customPresetName.trim() || saving}
+                    onClick={async () => {
+                      const name = customPresetName.trim();
+                      if (!name) return;
+                      const id = `custom-${Date.now()}`;
+                      const newPreset = {
+                        id,
+                        name,
+                        desc: "Saved custom color preset",
+                        primary: formData.colors.primary,
+                        primaryHsl: formData.colors.primaryHsl,
+                        secondary: formData.colors.secondary,
+                        secondaryHsl: formData.colors.secondaryHsl,
+                        accent: formData.colors.accent,
+                        accentHsl: formData.colors.accentHsl,
+                        background: formData.colors.background,
+                        backgroundHsl: formData.colors.backgroundHsl,
+                        foregroundHsl: formData.colors.foregroundHsl,
+                      };
+                      const updated: ThemeMasterData = {
+                        ...formData,
+                        activePreset: id,
+                        customPresets: [...(formData.customPresets || []), newPreset],
+                      };
+                      setFormData(updated);
+                      setCustomPresetName("");
+                      await saveTheme(updated);
+                      toast.success(`Saved custom preset "${name}"`);
+                    }}
+                    className="h-9 text-xs font-bold gap-1.5 shrink-0"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Save as Custom Preset
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -631,15 +715,15 @@ export default function ThemeMasterPage() {
           {activeTab === "typography" && (
             <div className="space-y-6">
               {/* Custom Fonts & External Import */}
-              <div className="bg-card border-2 border-teal-500/30 rounded-2xl p-5 shadow-xs space-y-5 bg-gradient-to-br from-card via-card to-teal-500/5">
+              <div className="bg-card border-2 border-primary/30 rounded-2xl p-5 shadow-xs space-y-5 bg-gradient-to-br from-card via-card to-secondary/5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-600 text-[10px] font-extrabold uppercase tracking-wider mb-1">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wider mb-1">
                       <Sparkles className="h-3 w-3" />
                       Custom Font Support
                     </div>
                     <h3 className="text-sm font-extrabold text-foreground flex items-center gap-2">
-                      <Plus className="h-4 w-4 text-teal-600" />
+                      <Plus className="h-4 w-4 text-primary" />
                       Add Any Google Font or Web Font
                     </h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
@@ -653,7 +737,7 @@ export default function ThemeMasterPage() {
                   <div className="space-y-2 bg-background/60 p-3.5 rounded-xl border border-border">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                        <Type className="h-3.5 w-3.5 text-teal-600" />
+                        <Type className="h-3.5 w-3.5 text-primary" />
                         Custom Heading Font Name
                       </Label>
                       {formData.typography.customHeadingFont && (
@@ -681,7 +765,7 @@ export default function ThemeMasterPage() {
                           key={s}
                           type="button"
                           onClick={() => handleCustomFontChange("customHeadingFont", s)}
-                          className="text-[10px] px-2 py-0.5 rounded-md bg-muted hover:bg-teal-500/10 hover:text-teal-600 font-medium transition-colors cursor-pointer"
+                          className="text-[10px] px-2 py-0.5 rounded-md bg-muted hover:bg-primary/10 hover:text-primary font-medium transition-colors cursor-pointer"
                         >
                           {s}
                         </button>
@@ -689,7 +773,7 @@ export default function ThemeMasterPage() {
                     </div>
                     {formData.typography.customHeadingFont && (
                       <p
-                        className="text-sm font-extrabold text-teal-700 dark:text-teal-300 pt-1 truncate"
+                        className="text-sm font-extrabold text-primary dark:text-teal-300 pt-1 truncate"
                         style={{ fontFamily: `'${formData.typography.customHeadingFont}', system-ui, sans-serif` }}
                       >
                         Preview: {formData.typography.customHeadingFont} — Specialized Care
@@ -701,7 +785,7 @@ export default function ThemeMasterPage() {
                   <div className="space-y-2 bg-background/60 p-3.5 rounded-xl border border-border">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                        <Type className="h-3.5 w-3.5 text-teal-600" />
+                        <Type className="h-3.5 w-3.5 text-primary" />
                         Custom Body Font Name
                       </Label>
                       {formData.typography.customBodyFont && (
@@ -729,7 +813,7 @@ export default function ThemeMasterPage() {
                           key={s}
                           type="button"
                           onClick={() => handleCustomFontChange("customBodyFont", s)}
-                          className="text-[10px] px-2 py-0.5 rounded-md bg-muted hover:bg-teal-500/10 hover:text-teal-600 font-medium transition-colors cursor-pointer"
+                          className="text-[10px] px-2 py-0.5 rounded-md bg-muted hover:bg-primary/10 hover:text-primary font-medium transition-colors cursor-pointer"
                         >
                           {s}
                         </button>
@@ -737,7 +821,7 @@ export default function ThemeMasterPage() {
                     </div>
                     {formData.typography.customBodyFont && (
                       <p
-                        className="text-xs text-teal-700 dark:text-teal-300 pt-1 line-clamp-1"
+                        className="text-xs text-primary dark:text-teal-300 pt-1 line-clamp-1"
                         style={{ fontFamily: `'${formData.typography.customBodyFont}', system-ui, sans-serif` }}
                       >
                         Preview: {formData.typography.customBodyFont} — Clear, accessible clinical guidance.
@@ -750,7 +834,7 @@ export default function ThemeMasterPage() {
                 <div className="space-y-2 pt-2 border-t border-border/60">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <LinkIcon className="h-3.5 w-3.5 text-teal-600" />
+                      <LinkIcon className="h-3.5 w-3.5 text-primary" />
                       External Font Stylesheet / CDN Link (Optional)
                     </Label>
                     {formData.typography.customFontUrl && (
@@ -779,13 +863,13 @@ export default function ThemeMasterPage() {
                     const detectedFamilies = parseFontFamiliesFromUrl(formData.typography.customFontUrl || "");
                     if (formData.typography.customFontUrl && detectedFamilies.length > 0) {
                       return (
-                        <div className="p-3.5 bg-teal-500/10 border-2 border-teal-500/30 rounded-xl space-y-3 mt-2 transition-all">
+                        <div className="p-3.5 bg-primary/10 border-2 border-primary/30 rounded-xl space-y-3 mt-2 transition-all">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-xs font-extrabold text-teal-800 dark:text-teal-200">
-                              <CheckCircle className="h-4 w-4 text-teal-600 shrink-0" />
+                            <div className="flex items-center gap-2 text-xs font-extrabold text-primary dark:text-teal-200">
+                              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
                               <span>Detected Web Font: <strong>{detectedFamilies.join(", ")}</strong></span>
                             </div>
-                            <span className="px-2 py-0.5 rounded-full bg-teal-600 text-white text-[10px] font-black uppercase tracking-wider">
+                            <span className="px-2 py-0.5 rounded-full bg-primary text-white text-[10px] font-black uppercase tracking-wider">
                               Connected
                             </span>
                           </div>
@@ -813,8 +897,8 @@ export default function ThemeMasterPage() {
                                   }}
                                   className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                                     formData.typography.customHeadingFont === fam
-                                      ? "bg-teal-600 text-white ring-2 ring-teal-600/30 shadow-xs"
-                                      : "bg-card border border-border hover:border-teal-500 text-foreground"
+                                      ? "bg-primary text-white ring-2 ring-primary/30 shadow-xs"
+                                      : "bg-card border border-border hover:border-primary text-foreground"
                                   }`}
                                 >
                                   {formData.typography.customHeadingFont === fam ? (
@@ -840,8 +924,8 @@ export default function ThemeMasterPage() {
                                   }}
                                   className={`text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                                     formData.typography.customBodyFont === fam
-                                      ? "bg-teal-600 text-white ring-2 ring-teal-600/30 shadow-xs"
-                                      : "bg-card border border-border hover:border-teal-500 text-foreground"
+                                      ? "bg-primary text-white ring-2 ring-primary/30 shadow-xs"
+                                      : "bg-card border border-border hover:border-primary text-foreground"
                                   }`}
                                 >
                                   {formData.typography.customBodyFont === fam ? (
@@ -866,7 +950,7 @@ export default function ThemeMasterPage() {
                                     previewTheme(updated);
                                     toast.success(`Applied "${fam}" to Headings & Body`);
                                   }}
-                                  className="text-[11px] px-2.5 py-1 rounded-lg font-bold bg-muted hover:bg-teal-500/20 text-teal-800 dark:text-teal-200 transition-all cursor-pointer"
+                                  className="text-[11px] px-2.5 py-1 rounded-lg font-bold bg-muted hover:bg-primary/20 text-primary dark:text-teal-200 transition-all cursor-pointer"
                                 >
                                   Apply to All
                                 </button>
@@ -875,7 +959,7 @@ export default function ThemeMasterPage() {
                           </div>
 
                           {/* Live Type Specimen of the URL Font */}
-                          <div className="pt-2 border-t border-teal-500/20 bg-background/60 p-2.5 rounded-lg">
+                          <div className="pt-2 border-t border-primary/20 bg-background/60 p-2.5 rounded-lg">
                             <p className="text-[10px] text-muted-foreground font-semibold mb-0.5">Live Font Render Specimen:</p>
                             {detectedFamilies.map((fam) => (
                               <p
@@ -914,7 +998,7 @@ export default function ThemeMasterPage() {
               <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
                 <div>
                   <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Type className="h-4 w-4 text-teal-600" />
+                    <Type className="h-4 w-4 text-primary" />
                     Curated Heading Fonts
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -925,16 +1009,16 @@ export default function ThemeMasterPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {formData.typography.customHeadingFont && (
                     <div
-                      className="p-3.5 rounded-2xl border-2 border-teal-600 bg-teal-50/50 dark:bg-teal-950/30 shadow-xs relative text-left"
+                      className="p-3.5 rounded-2xl border-2 border-primary bg-teal-50/50 dark:bg-teal-950/30 shadow-xs relative text-left"
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span
-                          className="text-base font-extrabold text-teal-700 dark:text-teal-300 truncate"
+                          className="text-base font-extrabold text-primary dark:text-teal-300 truncate"
                           style={{ fontFamily: `'${formData.typography.customHeadingFont}', system-ui, sans-serif` }}
                         >
                           {formData.typography.customHeadingFont}
                         </span>
-                        <span className="px-2 py-0.5 rounded-full bg-teal-600 text-white text-[10px] font-bold">
+                        <span className="px-2 py-0.5 rounded-full bg-primary text-white text-[10px] font-bold">
                           Active Custom
                         </span>
                       </div>
@@ -956,7 +1040,7 @@ export default function ThemeMasterPage() {
                         onClick={() => handleFontSelect("heading", font.name)}
                         className={`p-3.5 rounded-2xl border transition-all cursor-pointer text-left relative ${
                           isSelected
-                            ? "border-teal-600 bg-teal-50/40 dark:bg-teal-950/20 ring-2 ring-teal-600/20 shadow-xs"
+                            ? "border-primary bg-teal-50/40 dark:bg-teal-950/20 ring-2 ring-primary/20 shadow-xs"
                             : "border-border hover:border-teal-300 hover:bg-muted/40"
                         }`}
                       >
@@ -968,7 +1052,7 @@ export default function ThemeMasterPage() {
                             {font.name}
                           </span>
                           {isSelected && (
-                            <span className="w-4 h-4 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px]">
+                            <span className="w-4 h-4 rounded-full bg-primary text-white flex items-center justify-center text-[10px]">
                               <Check className="h-2.5 w-2.5" />
                             </span>
                           )}
@@ -990,7 +1074,7 @@ export default function ThemeMasterPage() {
               <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
                 <div>
                   <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Type className="h-4 w-4 text-teal-600" />
+                    <Type className="h-4 w-4 text-primary" />
                     Curated Body & Content Fonts
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -1001,16 +1085,16 @@ export default function ThemeMasterPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {formData.typography.customBodyFont && (
                     <div
-                      className="p-3.5 rounded-2xl border-2 border-teal-600 bg-teal-50/50 dark:bg-teal-950/30 shadow-xs relative text-left"
+                      className="p-3.5 rounded-2xl border-2 border-primary bg-teal-50/50 dark:bg-teal-950/30 shadow-xs relative text-left"
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span
-                          className="text-sm font-extrabold text-teal-700 dark:text-teal-300 truncate"
+                          className="text-sm font-extrabold text-primary dark:text-teal-300 truncate"
                           style={{ fontFamily: `'${formData.typography.customBodyFont}', system-ui, sans-serif` }}
                         >
                           {formData.typography.customBodyFont}
                         </span>
-                        <span className="px-2 py-0.5 rounded-full bg-teal-600 text-white text-[10px] font-bold">
+                        <span className="px-2 py-0.5 rounded-full bg-primary text-white text-[10px] font-bold">
                           Active Custom
                         </span>
                       </div>
@@ -1032,7 +1116,7 @@ export default function ThemeMasterPage() {
                         onClick={() => handleFontSelect("body", font.name)}
                         className={`p-3.5 rounded-2xl border transition-all cursor-pointer text-left relative ${
                           isSelected
-                            ? "border-teal-600 bg-teal-50/40 dark:bg-teal-950/20 ring-2 ring-teal-600/20 shadow-xs"
+                            ? "border-primary bg-teal-50/40 dark:bg-teal-950/20 ring-2 ring-primary/20 shadow-xs"
                             : "border-border hover:border-teal-300 hover:bg-muted/40"
                         }`}
                       >
@@ -1044,7 +1128,7 @@ export default function ThemeMasterPage() {
                             {font.name}
                           </span>
                           {isSelected && (
-                            <span className="w-4 h-4 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px]">
+                            <span className="w-4 h-4 rounded-full bg-primary text-white flex items-center justify-center text-[10px]">
                               <Check className="h-2.5 w-2.5" />
                             </span>
                           )}
@@ -1071,7 +1155,7 @@ export default function ThemeMasterPage() {
               <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
                 <div>
                   <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Sliders className="h-4 w-4 text-teal-600" />
+                    <Sliders className="h-4 w-4 text-primary" />
                     Corner Curvature / Border Radius
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -1089,15 +1173,15 @@ export default function ThemeMasterPage() {
                         onClick={() => handleRadiusSelect(opt)}
                         className={`p-3 border text-center transition-all cursor-pointer ${opt.preview} ${
                           isSelected
-                            ? "border-teal-600 bg-teal-500/10 ring-2 ring-teal-600/20 shadow-xs"
+                            ? "border-primary bg-primary/10 ring-2 ring-primary/20 shadow-xs"
                             : "border-border hover:border-teal-300 bg-muted/30"
                         }`}
                       >
                         <div
-                          className="w-full h-8 bg-teal-600/20 border border-teal-600/40 flex items-center justify-center mb-2 mx-auto"
+                          className="w-full h-8 bg-primary/20 border border-primary/40 flex items-center justify-center mb-2 mx-auto"
                           style={{ borderRadius: opt.value }}
                         >
-                          <span className="text-[10px] font-bold text-teal-700 dark:text-teal-300">
+                          <span className="text-[10px] font-bold text-primary dark:text-teal-300">
                             {opt.value}
                           </span>
                         </div>
@@ -1114,7 +1198,7 @@ export default function ThemeMasterPage() {
               <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
                 <div>
                   <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-teal-600" />
+                    <Layers className="h-4 w-4 text-primary" />
                     Button & Interactive Styling
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -1143,12 +1227,12 @@ export default function ThemeMasterPage() {
                         }}
                         className={`p-3 border text-center transition-all cursor-pointer rounded-2xl ${
                           isSelected
-                            ? "border-teal-600 bg-teal-500/10 ring-2 ring-teal-600/20 shadow-xs"
+                            ? "border-primary bg-primary/10 ring-2 ring-primary/20 shadow-xs"
                             : "border-border hover:border-teal-300 bg-muted/30"
                         }`}
                       >
                         <div
-                          className="w-full h-8 bg-teal-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow-2xs"
+                          className="w-full h-8 bg-primary text-white flex items-center justify-center text-xs font-bold mb-2 shadow-2xs"
                           style={{ borderRadius: btn.cssRadius }}
                         >
                           Click Me
@@ -1177,7 +1261,7 @@ export default function ThemeMasterPage() {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
                         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-teal-600" />
+                          <Sparkles className="h-4 w-4 text-primary" />
                           Hero Aurora Background Colors
                         </h3>
                         <p className="text-xs text-muted-foreground mt-0.5">
@@ -1319,7 +1403,7 @@ export default function ThemeMasterPage() {
             <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-5">
               <div>
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                  <Building className="h-4 w-4 text-teal-600" />
+                  <Building className="h-4 w-4 text-primary" />
                   Clinic Brand Identity
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -1382,15 +1466,15 @@ export default function ThemeMasterPage() {
 
         {/* Live Interactive Preview Column (5 cols) */}
         <div className="lg:col-span-5 sticky top-24 space-y-4">
-          <div className="bg-card border-2 border-teal-500/30 rounded-3xl p-5 shadow-xl space-y-5 relative overflow-hidden">
+          <div className="bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-xl space-y-5 relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
-                <Eye className="h-4 w-4 text-teal-600" />
+                <Eye className="h-4 w-4 text-primary" />
                 <span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
                   Live UI Demonstration
                 </span>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-600 text-[10px] font-black uppercase">
+              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase">
                 Real-Time
               </span>
             </div>
@@ -1458,7 +1542,7 @@ export default function ThemeMasterPage() {
                   >
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-extrabold text-foreground flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5 text-teal-600" />
+                        <Calendar className="h-3.5 w-3.5 text-primary" />
                         Initial Assessment
                       </span>
                       <span
@@ -1473,7 +1557,7 @@ export default function ThemeMasterPage() {
                     </p>
 
                     <div className="flex items-center gap-2 pt-1 text-[11px]">
-                      <span className="flex items-center gap-1 text-emerald-600 font-bold">
+                      <span className="flex items-center gap-1 text-primary font-bold">
                         <CheckCircle className="h-3 w-3" /> 45 Minutes
                       </span>
                       <span className="text-muted-foreground">• In-Clinic Visit</span>
@@ -1525,7 +1609,7 @@ export default function ThemeMasterPage() {
                       <strong className="text-foreground flex items-center gap-1">
                         {effectiveHeading}
                         {formData.typography.customHeadingFont?.trim() && (
-                          <span className="text-[9px] px-1 py-0.2 bg-teal-500/10 text-teal-600 rounded">
+                          <span className="text-[9px] px-1 py-0.2 bg-primary/10 text-primary rounded">
                             Custom
                           </span>
                         )}
@@ -1536,7 +1620,7 @@ export default function ThemeMasterPage() {
                       <strong className="text-foreground flex items-center gap-1">
                         {effectiveBody}
                         {formData.typography.customBodyFont?.trim() && (
-                          <span className="text-[9px] px-1 py-0.2 bg-teal-500/10 text-teal-600 rounded">
+                          <span className="text-[9px] px-1 py-0.2 bg-primary/10 text-primary rounded">
                             Custom
                           </span>
                         )}
@@ -1545,7 +1629,7 @@ export default function ThemeMasterPage() {
                     {formData.typography.customFontUrl && (
                       <div className="flex justify-between items-center">
                         <span>External Font CDN:</span>
-                        <strong className="text-teal-600 truncate max-w-[140px] text-[9px] font-mono">
+                        <strong className="text-primary truncate max-w-[140px] text-[9px] font-mono">
                           Connected
                         </strong>
                       </div>

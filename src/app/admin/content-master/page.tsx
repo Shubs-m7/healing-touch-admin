@@ -85,7 +85,7 @@ export default function ContentMasterPage() {
     }
 
     try {
-      await updateSiteContent({
+      const updated = await updateSiteContent({
         landingPage: {
           ...content.landingPage,
           hero: {
@@ -94,6 +94,7 @@ export default function ContentMasterPage() {
           },
         },
       });
+      setContent(updated);
       toast.success(
         variant === "classic"
           ? "Switched to Classic Hero (Live!)"
@@ -103,8 +104,8 @@ export default function ContentMasterPage() {
         }
       );
     } catch (err: any) {
-      console.warn("Hero switch direct save fallback:", err);
-      toast.info(`Switched to ${variant === "classic" ? "Classic" : "Modern Aurora"}. Please also click 'Save Changes' above.`);
+      console.error("Hero switch direct save error:", err);
+      toast.error(`Failed to save hero design: ${err.message || "Network error"}`);
     } finally {
       setSwitchingHero(false);
     }

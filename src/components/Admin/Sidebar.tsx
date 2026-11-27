@@ -122,6 +122,7 @@ export default function Sidebar({
           items: [
             { href: "/admin/appointments", label: "Appointments", shortLabel: "Bookings", icon: Calendar },
             { href: "/admin/sessions", label: "Sessions", shortLabel: "Sessions", icon: Activity },
+            { href: "/admin/profile", label: "My Profile", shortLabel: "Profile", icon: Users },
           ]
         }
       ]
@@ -153,6 +154,7 @@ export default function Sidebar({
             { href: "/admin/content-master", label: "Website Content", shortLabel: "Content", icon: Globe },
             { href: "/admin/pricing-master", label: "Pricing & Packages", shortLabel: "Pricing", icon: Tags },
             { href: "/admin/theme-master", label: "Theme & Branding", shortLabel: "Theme", icon: Palette },
+            { href: "/admin/profile", label: "My Profile", shortLabel: "Profile", icon: Users },
           ]
         }
       ];
@@ -164,7 +166,7 @@ export default function Sidebar({
       {/* MOBILE TOP BRAND HEADER */}
       <header className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur-md border-b border-border/80 shadow-xs">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-xs">
+          <div className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center shadow-xs">
             <Stethoscope className="w-4 h-4" />
           </div>
           <div>
@@ -176,7 +178,7 @@ export default function Sidebar({
           <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider ml-1 ${
             isReceptionist 
               ? "bg-amber-500/10 text-amber-700 border border-amber-500/20" 
-              : "bg-teal-500/10 text-teal-800 border border-teal-500/20"
+              : "bg-primary/10 text-primary border border-primary/20"
           }`}>
             {isReceptionist ? "Reception" : "Admin"}
           </span>
@@ -205,15 +207,15 @@ export default function Sidebar({
             {!collapsed ? (
               <>
                 <div className="flex items-center gap-2 truncate">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-600 to-emerald-700 text-white flex items-center justify-center shadow-xs shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center shadow-xs shrink-0">
                     <Stethoscope className="w-4 h-4" />
                   </div>
                   <div className="leading-tight truncate">
-                    <Link href={homeHref} className="text-sm font-black text-foreground tracking-tight hover:text-teal-700 transition-colors">
+                    <Link href={homeHref} className="text-sm font-black text-foreground tracking-tight hover:text-primary transition-colors">
                       Adaptus
                     </Link>
                     <div className="flex items-center gap-1 mt-0.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                       <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
                         {isReceptionist ? "Reception" : "Clinic Desk"}
                       </span>
@@ -263,12 +265,12 @@ export default function Sidebar({
                           collapsed
                             ? `w-10 h-10 rounded-xl flex items-center justify-center ${
                                 active
-                                  ? "bg-teal-600 text-white shadow-xs"
+                                  ? "bg-primary text-white shadow-xs"
                                   : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
                               }`
                             : `flex items-center gap-2.5 w-full px-2.5 py-2 rounded-xl text-xs font-semibold ${
                                 active
-                                  ? "bg-teal-600 text-white shadow-xs font-bold"
+                                  ? "bg-primary text-white shadow-xs font-bold"
                                   : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                               }`
                         }`}
@@ -289,7 +291,7 @@ export default function Sidebar({
           {!collapsed ? (
             <div className="p-2 rounded-xl bg-muted/40 border border-border/50 flex items-center justify-between w-full">
               <div className="flex items-center gap-2 truncate">
-                <div className="w-7 h-7 rounded-full bg-teal-500/20 text-teal-800 dark:text-teal-300 font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-full bg-primary/20 text-primary dark:text-teal-300 font-bold text-xs flex items-center justify-center shrink-0">
                   {isReceptionist ? "R" : "Dr"}
                 </div>
                 <div className="truncate text-left leading-tight">
@@ -336,14 +338,14 @@ export default function Sidebar({
                 href={href}
                 className={`flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl transition-all duration-200 min-h-[48px] active:scale-95 ${
                   active
-                    ? "text-teal-800 dark:text-teal-300 font-extrabold"
+                    ? "text-primary dark:text-teal-300 font-extrabold"
                     : "text-slate-500 dark:text-slate-400 hover:text-foreground font-medium"
                 }`}
               >
                 <div
                   className={`p-1.5 rounded-xl transition-all duration-200 relative ${
                     active
-                      ? "bg-teal-500/15 text-teal-800 dark:text-teal-300 scale-105 shadow-2xs"
+                      ? "bg-primary/15 text-primary dark:text-teal-300 scale-105 shadow-2xs"
                       : "text-slate-500 dark:text-slate-400"
                   }`}
                 >
@@ -353,7 +355,7 @@ export default function Sidebar({
                   {shortLabel}
                 </span>
                 {active && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-600 dark:bg-teal-400 mt-0.5 shadow-xs" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-teal-400 mt-0.5 shadow-xs" />
                 )}
               </Link>
             );
@@ -365,7 +367,7 @@ export default function Sidebar({
               onClick={() => setIsWaffleOpen(!isWaffleOpen)}
               className={`flex flex-col items-center justify-center py-1 px-0.5 rounded-2xl transition-all duration-200 min-h-[48px] active:scale-95 ${
                 isWaffleOpen || isWaffleModuleActive
-                  ? "text-teal-800 dark:text-teal-300 font-extrabold"
+                  ? "text-primary dark:text-teal-300 font-extrabold"
                   : "text-slate-500 dark:text-slate-400 hover:text-foreground font-medium"
               }`}
               title="Waffle Menu (All Apps)"
@@ -373,20 +375,20 @@ export default function Sidebar({
               <div
                 className={`p-1.5 rounded-xl transition-all duration-200 relative ${
                   isWaffleOpen || isWaffleModuleActive
-                    ? "bg-teal-500/15 text-teal-800 dark:text-teal-300 scale-105 shadow-2xs"
+                    ? "bg-primary/15 text-primary dark:text-teal-300 scale-105 shadow-2xs"
                     : "text-slate-500 dark:text-slate-400"
                 }`}
               >
                 <WaffleIcon className="w-[18px] h-[18px] shrink-0" />
                 {isWaffleModuleActive && !isWaffleOpen && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-teal-600 dark:bg-teal-400 ring-2 ring-card" />
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-primary dark:bg-teal-400 ring-2 ring-card" />
                 )}
               </div>
               <span className="text-[10px] mt-0.5 tracking-tight font-semibold truncate max-w-full text-center leading-tight">
                 Apps
               </span>
               {(isWaffleOpen || isWaffleModuleActive) && (
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-600 dark:bg-teal-400 mt-0.5 shadow-xs" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-teal-400 mt-0.5 shadow-xs" />
               )}
             </button>
           )}
@@ -410,13 +412,13 @@ export default function Sidebar({
             {/* Waffle Header */}
             <div className="flex items-center justify-between pb-3 border-b border-border/60 mb-3.5">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl border border-teal-500/30 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl border border-primary/30 text-primary dark:text-teal-400 flex items-center justify-center">
                   <WaffleIcon className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-black text-sm text-foreground tracking-tight flex items-center gap-1.5">
                     Adaptus Apps
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full border border-teal-500/30 text-teal-700 dark:text-teal-300">
+                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full border border-primary/30 text-primary dark:text-teal-300">
                       Waffle
                     </span>
                   </h3>
@@ -444,15 +446,15 @@ export default function Sidebar({
                     onClick={() => setIsWaffleOpen(false)}
                     className={`flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all text-center relative group active:scale-95 min-h-[96px] ${
                       active
-                        ? "bg-teal-500/10 border-teal-500/40 shadow-xs ring-2 ring-teal-500/20"
+                        ? "bg-primary/10 border-primary/40 shadow-xs ring-2 ring-primary/20"
                         : "bg-muted/30 hover:bg-muted/60 border-border/60 hover:border-border"
                     }`}
                   >
                     <div
                       className={`w-11 h-11 rounded-2xl flex items-center justify-center mb-1.5 transition-all duration-200 group-hover:scale-110 shrink-0 border ${
                         active
-                          ? "border-teal-500/60 text-teal-600 dark:text-teal-400 shadow-2xs"
-                          : "border-teal-500/25 dark:border-teal-500/35 text-teal-600 dark:text-teal-400 group-hover:border-teal-500/60"
+                          ? "border-primary/60 text-primary dark:text-teal-400 shadow-2xs"
+                          : "border-primary/25 dark:border-primary/35 text-primary dark:text-teal-400 group-hover:border-primary/60"
                       }`}
                     >
                       <Icon className="w-5 h-5 stroke-[2]" />
@@ -464,7 +466,7 @@ export default function Sidebar({
                       {app.category}
                     </span>
                     {active && (
-                      <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-teal-600 dark:bg-teal-400 ring-2 ring-card" />
+                      <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary dark:bg-teal-400 ring-2 ring-card" />
                     )}
                   </Link>
                 );
@@ -474,7 +476,7 @@ export default function Sidebar({
             {/* Staff Card & Quick Logout */}
             <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between bg-muted/20 p-3 rounded-2xl border border-border/40">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-full bg-teal-500/20 text-teal-800 dark:text-teal-300 font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-full bg-primary/20 text-primary dark:text-teal-300 font-bold text-xs flex items-center justify-center shrink-0">
                   {isReceptionist ? "R" : "Dr"}
                 </div>
                 <div className="min-w-0 leading-tight">

@@ -32,7 +32,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       localStorage.setItem("admin_role", user.role);
       if (user.name) localStorage.setItem("admin_name", user.name);
       if (user.email) localStorage.setItem("admin_email", user.email);
-      if (user.role === "receptionist" && pathname !== "/admin/appointments" && pathname !== "/admin/sessions") {
+      if (user.role === "receptionist" && pathname !== "/admin/appointments" && pathname !== "/admin/sessions" && pathname !== "/admin/profile") {
         router.replace("/admin/appointments");
         return;
       }
